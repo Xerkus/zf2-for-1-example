@@ -15,7 +15,8 @@ Features
 
 Installation
 ============
-Run docs/schema.sql on your database. The provided SQL is compatible with MySQL 5.1.
+Run composer install
+Run vagrant up
 
 Special Thanks
 ==============

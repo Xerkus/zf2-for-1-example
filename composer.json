@@ -1,0 +1,23 @@
+{
+    "name": "roave/zf2-for-1-example",
+    "description": "Usage examples for zf2-for-1",
+    "license": "BSD-2-Clause",
+    "authors": [
+        {
+            "name": "Aleksey Khudyakov",
+            "email": "aleksey@xerkus.pro"
+        }
+    ],
+    "require": {
+        "zendframework/zendframework1": "~1.12",
+        "zendframework/zf1-extras": "~1.12"
+    },
+    "autoload": {
+        "psr-0": {
+            "Issues_": "library/"
+        },
+        "classmap": [
+            "./application/modules/"
+        ]
+    }
+}

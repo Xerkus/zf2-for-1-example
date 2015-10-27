@@ -1,6 +1,5 @@
 <?php
 $config['appnamespace']                                        = 'Issues';
-$config['autoloadernamespaces'][]                              = 'Issues';
 $config['resources']['layout']['layoutPath']                   = APPLICATION_PATH . '/layouts';
 $config['resources']['layout']['layout']                       = 'layout';
 $config['resources']['modules']                                = array();

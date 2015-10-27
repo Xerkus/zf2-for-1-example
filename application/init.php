@@ -1,4 +1,7 @@
 <?php
+
+include '../vendor/autoload.php';
+
 // Define path to application directory
 defined('APPLICATION_PATH')
     || define('APPLICATION_PATH',
@@ -18,14 +21,12 @@ defined('APPLICATION_ENV')
 // Set the include path
 set_include_path(implode(PATH_SEPARATOR, array(get_include_path(), LIBRARY_PATH)));
 
-require_once LIBRARY_PATH . "/Issues/Profiler.php";
 Issues_Profiler::enable();
 Issues_Profiler::start('all');
 
 Issues_Profiler::start('bootstrap');
 
 try {
-    require_once 'Zend/Application.php';
     $application = new Zend_Application(
         APPLICATION_ENV,
         APPLICATION_PATH . '/configs/config.php'
