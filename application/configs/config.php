@@ -1,4 +1,7 @@
 <?php
+$config['pluginpaths']['Zf2for1_Resource'] = APPLICATION_PATH . "/../vendor/roave/zf2-for-1/src/Zf2for1/Resource";
+$config['resources']['zf2']                = array();
+
 $config['appnamespace']                                        = 'Issues';
 $config['resources']['layout']['layoutPath']                   = APPLICATION_PATH . '/layouts';
 $config['resources']['layout']['layout']                       = 'layout';

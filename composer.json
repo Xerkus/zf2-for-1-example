@@ -10,7 +10,9 @@
     ],
     "require": {
         "zendframework/zendframework1": "~1.12",
-        "zendframework/zf1-extras": "~1.12"
+        "zendframework/zf1-extras": "~1.12",
+        "zendframework/zendframework": "~2.0",
+        "roave/zf2-for-1": "0.2.0"
     },
     "autoload": {
         "psr-0": {
