@@ -1,0 +1,125 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <?= $this->headMeta() ?>
+        <?= $this->headTitle('Issues') ?> 
+        <?= $this->jQuery() ?>
+        <?= $this->headLink()
+                 ->appendStylesheet('/css/rebase-min.css')
+                 ->appendStylesheet('/css/style.css') ?>
+        <?= $this->headScript()
+                 ->appendFile('/js/issues-global.js') ?>
+        <link rel="shortcut icon" href="/images/icons/application_view_list.png" />
+        <script type="text/javascript">
+            $(document).ready(function() {
+                autoPopulate('#siteSearchInput', '<?=$this->translate('search_box_label');?>');
+                autoPopulate('#newLabelInput', '<?=$this->translate('new_label_name');?>');
+            });
+        </script>
+    </head>
+    <body>
+        
+        <div id="pageWrap">
+
+            <div id="siteHeader" class="clearfix">
+                <div id="siteTitle" class="floatLeft">
+                    <?=$this->translate('issues');?>
+                </div>
+                
+                <form method="post" action="#" id="siteSearchForm" class="floatRight">
+                    <label id="siteSearch" for="siteSearchInput">
+                        <input type="text" name="siteSearchInput" tabIndex="1" id="siteSearchInput" />
+                    </label>
+                    <button type="submit" id="siteSearchButton"><?=$this->translate('go');?></button>
+                </form>
+            </div>
+            
+            <div class="clearfix">
+                <?php
+                  /**
+                   * TODO: Make this selection box out of HTML/CSS with anchor tags
+                   */
+                ?>
+                <?php if (count($this->projects) > 1): ?>
+                    <select id="projectSelect" class="floatLeft">
+                        <?php foreach ($this->projects as $project): ?>
+                            <option value="<?php echo $project->getUrlSafeName(); ?>"><?php echo $project->getName(); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                <?php endif; ?>
+                
+                <?php
+                 /**
+                  * TODO: Clean this up and/or switch to Zend_Navigation
+                  */
+                ?>
+                <ul id="primaryNavigation" class="tabList floatLeft">
+                    <li <?php if(Zend_Controller_Front::getInstance()->getRequest()->getControllerName() == 'index'): ?>class="active"<?php endif; ?>>
+                        <a href="<?=$this->url(array('controller'=>'index','action'=>'index'), null, true);?>"><?=$this->translate('issues');?></a>
+                    </li>
+                    <li <?php if(Zend_Controller_Front::getInstance()->getRequest()->getControllerName() == 'projects'): ?>class="active"<?php endif; ?>>
+                        <a href="<?=$this->url(array('controller'=>'projects','action'=>'index'));?>">Projects</a>
+                    </li>
+                    <li <?php if(Zend_Controller_Front::getInstance()->getRequest()->getControllerName() == 'milestones'): ?>class="active"<?php endif; ?>>
+                        <a href="<?=$this->url(array('controller'=>'milestones','action'=>'index'));?>"><?=$this->translate('milestones');?></a>
+                    </li>
+                    <li <?php if(Zend_Controller_Front::getInstance()->getRequest()->getControllerName() == 'members'): ?>class="active"<?php endif; ?>>
+                        <a href="#"><?=$this->translate('members');?></a>
+                    </li>
+                    
+                    <li class="floatRight">
+                        <?php if(Zend_Registry::get('Default_DiContainer')->getAclService()->isAllowed('user', 'logout')): ?>
+                            <?php // Signed in as <?= Zend_Auth::getInstance()->getIdentity()->getUsername(); | ?><a href="<?=$this->url(array('controller'=>'auth','action'=>'logout'), null, true);?>"><?= $this->translate('sign_out'); ?></a>
+                        <?php else: ?>
+                            <a href="<?=$this->url(array('controller'=>'auth','action'=>'index'), null, true);?>"><?= $this->translate('sign_in'); ?> / <?=$this->translate('register');?></a>
+                        <?php endif; ?>
+                    </li>
+                </ul>
+            </div>
+            <?php $counts = Zend_Registry::get('Default_DiContainer')->getIssueService()->getIssueCounts(); ?>
+            <div class="tabListBottom">
+                <ul class="tabListSubNav clearfix">
+                    <?php
+                    $request = Zend_Controller_Front::getInstance()->getRequest();
+                    $all = false; $mine = false; $unassigned = false;
+                    if ($request->getControllerName() == 'index') {
+                        if ($request->getParam('mine') === null && $request->getParam('unassigned') === null) {
+                            $all = true;
+                        } else if ($request->getParam('mine') !== null && $request->getParam('unassigned') === null) {
+                            $mine = true;
+                        } else if ($request->getParam('mine') === null && $request->getParam('unassigned') !== null) {
+                            $unassigned = true;
+                        }
+                    }
+                    ?>
+                    <li<?= ($all) ? ' class="active"' : '' ?>>
+                        <a href="<?=$this->url(array('controller'=>'index','action'=>'index'), null, true)?>"><?=$this->translate('all_issues');?> (<?=$counts['all']?>)</a>
+                    </li>
+                    <li>
+                    <li<?= ($mine) ? ' class="active"' : '' ?>>
+                        <a href="<?=$this->url(array('controller'=>'index','action'=>'index','mine'=>'1'), null, true)?>"><?=$this->translate('my_issues');?> (<?=$counts['mine']?>)</a>
+                    </li>
+                    <li>
+                        <a href="#"><?=$this->translate('mentioning_you');?> (0)</a>
+                    </li>
+                    <li>
+                    <li<?= ($unassigned) ? ' class="active"' : '' ?>>
+                        <a href="<?=$this->url(array('controller'=>'index','action'=>'index','unassigned'=>'1'), null, true)?>"><?=$this->translate('unassigned_issues');?> (<?=$counts['unassigned']?>)</a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div id="pageContent" class="clearfix">
+                
+                <?= $this->layout()->content; ?>
+            
+            </div>
+            
+        </div>
+        
+    </body>
+    <!-- Page template by, Chris Kankiewicz <http://www.chriskankiewicz.com> -->
+<?php echo Issues_Profiler::_toHTML(); ?>
+</html>

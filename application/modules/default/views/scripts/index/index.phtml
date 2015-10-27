@@ -1,0 +1,125 @@
+<?php if(Zend_Registry::get('Default_DiContainer')->getAclService()->isAllowed('issue', 'create')): ?>
+    <a href="<?= $this->url(array('controller' => 'issues', 'action' => 'new')); ?>" class="floatRight newIssue"><?=$this->translate('new_issue');?></a>
+<?php endif; ?>
+
+<div id="infoPane" class="floatLeft">
+    
+    <h4 class="infoTitle"><?=$this->translate('milestones');?></h4>
+    
+    <div id="milestoneList">
+        <?php if ($this->milestones) : ?>
+        <?php foreach ($this->milestones as $i) : ?>
+        <div class="milestone">
+            <h5><?=$i->getName()?></h5>
+            <div class="progressBarOuter">
+                <div class="progressBarInner" style="width: <?=$i->getProgress()?>%;"></div>
+            </div>
+            <div class="milestoneIssueCount clearfix">
+                <div class="floatLeft"><?=$i->getClosedCount()?> <?=$this->translate('closed_issues');?></div>
+                <div class="floatRight"><?=$i->getOpenCount()?> <?=$this->translate('open_issues');?></div>
+            </div>
+        </div>
+        <?php endforeach; ?>
+        <?php endif; ?>
+    </div>
+
+    <h4 class="infoTitle"><?=$this->translate('labels');?></h4>
+    
+    <ul id="labelList">
+        <?php if (count($this->labels)) : ?>
+        <?php foreach ($this->labels as $label) : ?>
+        <li class="clearfix">
+            <div class="labelColor" style="background-color: <?=$label->getColor()?>;">
+                <div class="labelArrow"></div>
+            </div>
+            <div class="labelName"><?=$label->getText()?></div>
+            <div class="labelCount"><?=$label->getIssueCount()?></div>
+        </li>
+        <?php endforeach; ?>
+        <?php endif; ?>
+    </ul>
+    <?= $this->createLabelForm; ?>
+    
+</div>
+
+<div id="mainContent" class="floatRight">
+                        
+    <div class="clearfix">
+        <ul id="issuesNavigation" class="tabList floatLeft">
+            <li id="issuesNavOpen" class="active"><a href="javascript:switchTables('open');"><?=$this->translate('open_issues');?> (<?= count($this->openIssues); ?>)</a></li>
+            <li id="issuesNavClosed"><a href="javascript:switchTables('closed');"><?=$this->translate('closed_issues');?> (<?=count($this->closedIssues)?>)</a></li>
+        </ul>
+    </div>
+    
+    <div class="tabListBottom">
+        <select>
+            <option selected="selected"><?=$this->translate('label')?></option>
+            <?php foreach ($this->labelsSelect as $value => $text) : ?>
+                <option value="<?=$value?>"><?=$text?></option>
+            <?php endforeach; ?>
+        </select>
+        <select>
+            <option><?=$this->translate('assign');?></option>
+            <?php foreach ($this->usersSelect as $value => $text) : ?>
+                <option value="<?=$value?>"><?=$text?></option>
+            <?php endforeach; ?>
+        </select>
+        <select>
+            <option><?=$this->translate('milestone');?></option>
+            <?php foreach ($this->milestonesSelect as $value => $text) : ?>
+                <option value="<?=$value?>"><?=$text?></option>
+            <?php endforeach; ?>
+        </select>
+        <input type="submit" value="<?=$this->translate('close');?>" />
+        <?=$this->translate('select_issue_to_modify');?>
+    </div>
+    
+    <table id="issuesListOpen" class="issuesList">
+        <?php foreach($this->openIssues as $i => $issue): ?>
+        <tr class="<?php if(($i+1)%2): ?>even<?php else: ?>odd<?php endif; ?>">
+            <td class="issueToggle"><input class="issueCheckbox" type="checkbox" /></td>
+            <td class="issueNumber">#<?= $issue->getIssueId(); ?></td>
+            <td class="issueInfo">
+                <h4 class="issueTitle"><a href="<?=$this->url(array('controller'=>'issues','action'=>'view','id'=>$issue->getIssueId()))?>"><?= $issue->getTitle(); ?></a></h4>
+                <p class="issueMetaInfo"><?=$this->translate('by');?> <?= $issue->getCreatedBy()->getUsername(); ?> <?=$this->translate('on');?> <?= $issue->getCreatedTime()->format($this->user->getSetting('date-format') ?: 'F jS, Y G:i:s'); ?></p>
+                <?php foreach ($issue->getLabels() as $l) : ?>
+                   <span class="issueLabel" style="background-color: <?=$l->getColor()?>;"><?=$l->getText()?></span>
+                <?php endforeach; ?>
+            </td>
+        </tr>
+        <?php endforeach; ?>
+    </table>
+
+    <table id="issuesListClosed" class="issuesList" style="display:none;">
+        <?php foreach($this->closedIssues as $i => $issue): ?>
+        <tr class="<?php if(($i+1)%2): ?>even<?php else: ?>odd<?php endif; ?>">
+            <td class="issueToggle"><input class="issueCheckbox" type="checkbox" /></td>
+            <td class="issueNumber">#<?= $issue->getIssueId(); ?></td>
+            <td class="issueInfo">
+                <h4 class="issueTitle"><a href="<?=$this->url(array('controller'=>'issues','action'=>'view','id'=>$issue->getIssueId()))?>"><?= $issue->getTitle(); ?></a></h4>
+                <p class="issueMetaInfo"><?=$this->translate('by');?> <?= $issue->getCreatedBy()->getUsername(); ?> <?=$this->translate('on');?> <?= $issue->getCreatedTime()->format($this->user->getSetting('date-format') ?: 'F jS, Y G:i:s'); ?></p>
+                <?php foreach ($issue->getLabels() as $l) : ?>
+                   <span class="issueLabel" style="background-color: <?=$l->getColor()?>;"><?=$l->getText()?></span>
+                <?php endforeach; ?>
+            </td>
+        </tr>
+        <?php endforeach; ?>
+    </table>
+    
+</div>
+<script type="text/javascript">
+function switchTables(which) {
+    $('.issueCheckbox:checked').removeAttr('checked');
+    if (which == 'open') {
+        $('#issuesListClosed').hide();
+        $('#issuesListOpen').show();
+        $('#issuesNavOpen').addClass('active');
+        $('#issuesNavClosed').removeClass('active');
+    } else if (which == 'closed') {
+        $('#issuesListOpen').hide();
+        $('#issuesListClosed').show();
+        $('#issuesNavClosed').addClass('active');
+        $('#issuesNavOpen').removeClass('active');
+    }
+}
+</script>

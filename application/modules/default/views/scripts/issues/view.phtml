@@ -1,0 +1,74 @@
+<?php if ($this->canEdit) : ?>
+<a href="<?= $this->url(array('controller' => 'issues', 'action' => 'edit', 'id'=>$this->issue->getIssueId())); ?>" class="newIssue floatRight"><?=$this->translate('edit_issue');?></a>
+<?php endif; ?>
+<h1>#<?=$this->issue->getIssueId()?> <?=$this->issue->getTitle()?></h1>
+
+<?php $dateFormat = $this->user->getSetting('date-format') ?: 'F jS, Y G:i:s'; ?>
+
+Created by <?=$this->issue->getCreatedBy()->getUsername()?> on 
+    <?=$this->issue->getCreatedTime()->format($dateFormat);?><br />
+
+<?php if ($this->issue->getLastUpdateTime()) : ?>
+Last updated: <?=$this->issue->getLastUpdateTime()->format($dateFormat);?><br />
+<?php endif; ?>
+
+<?php if ($this->issue->getAssignedTo()) : ?>
+    Assigned to <?=$this->issue->getAssignedTo()->getUsername()?><br />
+<?php else : ?>
+    Assigned to no one<br />
+<?php endif; ?>
+
+<?php if ($this->issue->getProject()) : ?>
+    Project: <?=$this->issue->getProject()->getName()?><br />
+<?php else: ?>
+    Project: none<br />
+<?php endif; ?>
+
+Status: <?=$this->issue->getStatus()?><br />
+<hr />
+<?=nl2br($this->issue->getDescription())?>
+<hr />
+
+<?php if ($this->comments) : ?>
+    <h2>Comments</h2>
+    <?php foreach ($this->comments as $i) : ?>
+        <?php if ($i->isSystem()) : ?>
+            <?php 
+            $changes = json_decode($i->getText(false), true);
+            if ($changes === null) {
+                continue;
+            }
+            ?>
+            <blockquote>
+            <?php
+            foreach ($changes as $c) {
+                if ($c['action'] == 'open-close') {
+                    if ($c['old_value'] == 'open') {
+                        ?>
+                        <b><?=$i->getCreatedBy()->getUsername()?> closed the issue</b>
+                        <?php
+                    } else {
+                        ?>
+                        <b><?=$i->getCreatedBy()->getUsername()?> re-opened the issue</b>
+                        <?php
+                    }
+                }
+            }
+
+            ?>
+            </blockquote>
+
+        <?php else : ?>
+        Comment by <?=$i->getCreatedBy()->getUsername()?> on <?=$i->getCreatedTime()->format($dateFormat);?>
+        <?php if (Zend_Registry::get('Default_DiContainer')->getCommentService()->canEditComment($i)) : ?>
+        [<a href="<?=$this->url(array('action'=>'edit-comment', 'id'=>$i->getCommentId()))?>">Edit</a>]
+        <?php endif; ?>
+        <?php if (Zend_Registry::get('Default_DiContainer')->getCommentService()->canDeleteComment($i)) : ?>
+        [<a href="<?=$this->url(array('action'=>'delete-comment', 'id'=>$i->getCommentId()))?>">Delete</a>]<br />
+        <?php endif; ?>
+        <blockquote><?=nl2br($i->getText())?></blockquote>
+        <?php endif; ?>
+    <?php endforeach; ?>
+<?php endif; ?>
+<hr />
+<?=$this->commentForm?>
