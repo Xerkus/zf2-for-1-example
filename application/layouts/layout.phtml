@@ -56,6 +56,9 @@
                   */
                 ?>
                 <ul id="primaryNavigation" class="tabList floatLeft">
+                    <li>
+                        <a href="/zf2"><?=$this->translate('zf2 application page');?></a>
+                    </li>
                     <li <?php if(Zend_Controller_Front::getInstance()->getRequest()->getControllerName() == 'example'): ?>class="active"<?php endif; ?>>
                         <a href="<?=$this->url(array('controller'=>'example','action'=>'index'), null, true);?>"><?=$this->translate('zf2 service manager example');?></a>
                     </li>

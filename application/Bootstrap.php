@@ -1,5 +1,5 @@
 <?php
-class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
+class Bootstrap extends \Zf2for1\Application\Zf2Bootstrap
 {
 
     protected function _initProfiler()
