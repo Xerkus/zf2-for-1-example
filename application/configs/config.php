@@ -9,7 +9,7 @@ $config['bootstrap']['class']                                  = 'Bootstrap';
 
 $config['resources']['frontController']['moduleDirectory']     = APPLICATION_PATH . '/modules';
 $config['resources']['frontController']['defaultModule']       = 'default';
-$config['resources']['frontController']['throwExceptions']     = true;
+$config['resources']['frontController']['throwExceptions']     = false;
 $config['resources']['frontController']['prefixDefaultModule'] = true;
 
 $config['resources']['translate']['adapter']                   = 'gettext';
