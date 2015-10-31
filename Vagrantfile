@@ -31,6 +31,9 @@ service apache2 restart
 echo "create database issues" | mysql -u root
 mysql -u root issues < docs/schema.sql
 
+curl -Ss https://getcomposer.org/installer | php
+php composer.phar install --no-progress
+
 echo "** Visit http://localhost:8085 in your browser for to view the application **"
 SCRIPT
 
